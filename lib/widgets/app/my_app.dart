@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../example/example_widget.dart';
+import '../group_form/group_form_widget.dart';
+import '../groups/groups_widget.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -13,7 +14,11 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: ExampleWidget(),
+      routes: {
+        '/groups': (context) => const GroupsWidget(),
+        '/groups/form': (context) => GroupFormWidget(),
+      },
+      initialRoute: '/groups',
     );
   }
 }
