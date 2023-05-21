@@ -1,47 +1,61 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:to_do_list/widgets/groups/groups_widget_model.dart';
 
-class GroupsWidget extends StatelessWidget {
+class GroupsWidget extends StatefulWidget {
   const GroupsWidget({Key? key}) : super(key: key);
 
-  void showForm(BuildContext context) {
-    Navigator.of(context).pushNamed('/groups/form');
+  @override
+  State<GroupsWidget> createState() => _GroupsWidgetState();
+}
+
+class _GroupsWidgetState extends State<GroupsWidget> {
+  final _model = GroupsWidgetModel();
+
+  @override
+  Widget build(BuildContext context) {
+    return GroupsWidgetModelProvider(
+      model: _model,
+      child: const _GroupsWidgetBody(),
+    );
   }
+}
+
+class _GroupsWidgetBody extends StatelessWidget {
+  const _GroupsWidgetBody({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Группы'),
+        title: const Text('Группы'),
       ),
-      body: _GroupListWidget(),
+      body: const _GroupListWidget(),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => showForm(context),
-        child: Icon(Icons.add),
+        onPressed: () =>
+            GroupsWidgetModelProvider.read(context)?.model.showForm(context),
+        child: const Icon(Icons.add),
       ),
     );
   }
 }
 
-class _GroupListWidget extends StatefulWidget {
+class _GroupListWidget extends StatelessWidget {
   const _GroupListWidget({Key? key}) : super(key: key);
 
   @override
-  State<_GroupListWidget> createState() => _GroupListWidgetState();
-}
-
-class _GroupListWidgetState extends State<_GroupListWidget> {
-  @override
   Widget build(BuildContext context) {
+    final groupsCount =
+        GroupsWidgetModelProvider.watch(context)?.model.groups.length ?? 0;
     return ListView.separated(
-      itemCount: 100,
+      itemCount: groupsCount,
       itemBuilder: (BuildContext context, int index) {
         return _GroupListRowWidget(
           indexInList: index,
         );
       },
       separatorBuilder: (BuildContext context, int index) {
-        return Divider(height: 1);
+        return const Divider(height: 1);
       },
     );
   }
@@ -57,8 +71,10 @@ class _GroupListRowWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final model = GroupsWidgetModelProvider.read(context)!.model;
+    final group = model.groups[indexInList];
     return Slidable(
-      actionPane: SlidableBehindActionPane(),
+      actionPane: const SlidableBehindActionPane(),
       // actions: <Widget>[
       //   IconSlideAction(
       //     caption: 'Archive',
@@ -78,7 +94,7 @@ class _GroupListRowWidget extends StatelessWidget {
           caption: 'Delete',
           color: Colors.red,
           icon: Icons.delete,
-          onTap: () {},
+          onTap: () => model.deleteGroup(indexInList),
         ),
         // IconSlideAction(
         //   caption: 'Archive',
@@ -90,11 +106,9 @@ class _GroupListRowWidget extends StatelessWidget {
       child: ColoredBox(
         color: Colors.white,
         child: ListTile(
-          title: Text('jklhrlkjshdrlk'),
-          trailing: Icon(Icons.chevron_right),
-          onTap: () {
-
-          },
+          title: Text(group.name),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () {},
         ),
       ),
     );
