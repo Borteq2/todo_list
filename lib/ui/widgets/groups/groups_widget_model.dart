@@ -2,9 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:to_do_list/domain/entities/group.dart';
 import 'package:to_do_list/domain/entities/task.dart';
+import 'package:to_do_list/ui/main_navigation/main_navigation.dart';
 
-import '../../domain/entities/group.dart';
 
 class GroupsWidgetModel extends ChangeNotifier {
   var _groups = <Group>[];
@@ -16,7 +17,7 @@ class GroupsWidgetModel extends ChangeNotifier {
   }
 
   void showForm(BuildContext context) {
-    Navigator.of(context).pushNamed('/groups/form');
+    Navigator.of(context).pushNamed(MainNavigationRouteNames.groupsForm);
   }
 
   void showTasks(BuildContext context, int groupIndex) async {
@@ -28,7 +29,7 @@ class GroupsWidgetModel extends ChangeNotifier {
 
     unawaited(
       Navigator.of(context).pushNamed(
-        '/groups/tasks',
+        MainNavigationRouteNames.tasks,
         arguments: groupKey,
       ),
     );
