@@ -1,15 +1,25 @@
 import 'package:hive/hive.dart';
+import 'package:to_do_list/domain/entities/task.dart';
 
 part 'group.g.dart';
 
 @HiveType(typeId: 1)
-class Group {
+class Group extends HiveObject {
+
+  @HiveField(0)
+  String name;
+
+  @HiveField(1)
+  HiveList<Task>? tasks;
 
   Group({
     required this.name,
   });
 
-  @HiveField(0)
-  String name;
+  void addTask(Box<Task> box, Task task) {
+    tasks ??= HiveList(box);
+    tasks?.add(task);
+    save();
+  }
 
 }

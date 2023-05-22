@@ -1,56 +1,75 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:to_do_list/widgets/groups/groups_widget_model.dart';
+import 'package:to_do_list/widgets/tasks/tasks_widget_model.dart';
 
-class GroupsWidget extends StatefulWidget {
-  const GroupsWidget({Key? key}) : super(key: key);
+class TasksWidget extends StatefulWidget {
+  const TasksWidget({Key? key}) : super(key: key);
 
   @override
-  State<GroupsWidget> createState() => _GroupsWidgetState();
+  State<TasksWidget> createState() => _TasksWidgetState();
 }
 
-class _GroupsWidgetState extends State<GroupsWidget> {
-  final _model = GroupsWidgetModel();
+class _TasksWidgetState extends State<TasksWidget> {
+  TasksWidgetModel? _model;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (_model == null) {
+      final groupKey = ModalRoute.of(context)!.settings.arguments as int;
+      _model = TasksWidgetModel(groupKey: groupKey);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return GroupsWidgetModelProvider(
-      model: _model,
-      child: const _GroupsWidgetBody(),
-    );
+    final model = _model;
+    if (model != null) {
+      return TasksWidgetModelProvider(
+        model: model,
+        child: TasksWidgetBody(),
+      );
+    } else {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    }
   }
 }
 
-class _GroupsWidgetBody extends StatelessWidget {
-  const _GroupsWidgetBody({Key? key}) : super(key: key);
+class TasksWidgetBody extends StatelessWidget {
+  const TasksWidgetBody({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final model = TasksWidgetModelProvider.watch(context)?.model;
+    final title = model?.group?.name ?? 'Задачи';
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Группы'),
+        title: Text(title),
       ),
-      body: const _GroupListWidget(),
+      body: _TasksListWidget(),
       floatingActionButton: FloatingActionButton(
-        onPressed: () =>
-            GroupsWidgetModelProvider.read(context)?.model.showForm(context),
+        onPressed: () => model?.showForm(context),
         child: const Icon(Icons.add),
       ),
     );
   }
 }
 
-class _GroupListWidget extends StatelessWidget {
-  const _GroupListWidget({Key? key}) : super(key: key);
+class _TasksListWidget extends StatelessWidget {
+  const _TasksListWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final groupsCount =
-        GroupsWidgetModelProvider.watch(context)?.model.groups.length ?? 0;
+    final tasksCount =
+        TasksWidgetModelProvider.watch(context)?.model.tasks.length ?? 0;
     return ListView.separated(
-      itemCount: groupsCount,
+      itemCount: tasksCount,
       itemBuilder: (BuildContext context, int index) {
-        return _GroupListRowWidget(
+        return _TasksListRowWidget(
           indexInList: index,
         );
       },
@@ -61,18 +80,18 @@ class _GroupListWidget extends StatelessWidget {
   }
 }
 
-class _GroupListRowWidget extends StatelessWidget {
+class _TasksListRowWidget extends StatelessWidget {
   final int indexInList;
 
-  const _GroupListRowWidget({
+  const _TasksListRowWidget({
     Key? key,
     required this.indexInList,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final model = GroupsWidgetModelProvider.read(context)!.model;
-    final group = model.groups[indexInList];
+    final model = TasksWidgetModelProvider.read(context)!.model;
+    final tasks = model.tasks[indexInList];
     return Slidable(
       actionPane: const SlidableBehindActionPane(),
       // actions: <Widget>[
@@ -94,7 +113,7 @@ class _GroupListRowWidget extends StatelessWidget {
           caption: 'Delete',
           color: Colors.red,
           icon: Icons.delete,
-          onTap: () => model.deleteGroup(indexInList),
+          onTap: () => model.deleteTask(indexInList),
         ),
         // IconSlideAction(
         //   caption: 'Archive',
@@ -106,9 +125,9 @@ class _GroupListRowWidget extends StatelessWidget {
       child: ColoredBox(
         color: Colors.white,
         child: ListTile(
-          title: Text(group.name),
+          title: Text(tasks.text),
           trailing: const Icon(Icons.chevron_right),
-          onTap: () => model.showTasks(context, indexInList),
+          onTap: () {},
         ),
       ),
     );
