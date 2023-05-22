@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:to_do_list/domain/entities/task.dart';
 
 import '../../domain/entities/group.dart';
 
@@ -38,6 +39,7 @@ class GroupsWidgetModel extends ChangeNotifier {
       Hive.registerAdapter(GroupAdapter());
     }
     final box = await Hive.openBox<Group>('groups_box');
+    await box.getAt(groupIndex)?.tasks?.deleteAllFromHive();
     await box.deleteAt(groupIndex);
   }
 
@@ -45,6 +47,11 @@ class GroupsWidgetModel extends ChangeNotifier {
     if (!Hive.isAdapterRegistered(1)) {
       Hive.registerAdapter(GroupAdapter());
     }
+
+    if (!Hive.isAdapterRegistered(2)) {
+      Hive.registerAdapter(TaskAdapter());
+    }
+    await Hive.openBox<Task>('tasks_box');
 
     void _readGroupsFromHive(Box<Group> box) {
       _groups = box.values.toList();

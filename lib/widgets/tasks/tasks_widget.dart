@@ -91,7 +91,12 @@ class _TasksListRowWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final model = TasksWidgetModelProvider.read(context)!.model;
-    final tasks = model.tasks[indexInList];
+    final task = model.tasks[indexInList];
+
+    final icon = task.isDone ? Icons.done : null;
+    final style =
+        task.isDone ? TextStyle(decoration: TextDecoration.lineThrough) : null;
+
     return Slidable(
       actionPane: const SlidableBehindActionPane(),
       // actions: <Widget>[
@@ -125,9 +130,12 @@ class _TasksListRowWidget extends StatelessWidget {
       child: ColoredBox(
         color: Colors.white,
         child: ListTile(
-          title: Text(tasks.text),
-          trailing: const Icon(Icons.chevron_right),
-          onTap: () {},
+          title: Text(
+            task.text,
+            style: style,
+          ),
+          trailing: Icon(icon),
+          onTap: () => model.doneToggle(indexInList),
         ),
       ),
     );

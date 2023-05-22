@@ -12,7 +12,9 @@ class TasksWidgetModel extends ChangeNotifier {
   var _tasks = <Task>[];
 
   Group? _group;
+
   Group? get group => _group;
+
   List<Task> get tasks => _tasks.toList();
 
   TasksWidgetModel({required this.groupKey}) {
@@ -44,8 +46,16 @@ class TasksWidgetModel extends ChangeNotifier {
   }
 
   void deleteTask(int groupIndex) async {
-    await group?.tasks?.deleteFromHive(groupIndex);
-    await group?.save();
+    await _group?.tasks?.deleteFromHive(groupIndex);
+    await _group?.save();
+  }
+
+  void doneToggle(int groupIndex) async {
+    final task = _group?.tasks?[groupIndex];
+    final currentState = task?.isDone ?? false;
+    task?.isDone = !currentState;
+    task?.save();
+    notifyListeners();
   }
 
   void _setup() {
