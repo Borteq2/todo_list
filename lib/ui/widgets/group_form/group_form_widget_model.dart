@@ -11,6 +11,7 @@ class GroupFormWidgetModel {
     final box = await BoxManager.instanse.openGroupBox();
     final group = Group(name: groupName);
     await box.add(group);
+    await BoxManager.instanse.closeBox(box);
     Navigator.of(context).pop();
   }
 }

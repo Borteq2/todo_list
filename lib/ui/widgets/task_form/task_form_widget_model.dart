@@ -12,9 +12,11 @@ class TaskFormWidgetModel {
 
   void saveTasks(BuildContext context) async {
     if (taskText.isEmpty) return;
+
     final task = Task(text: taskText, isDone: false);
     final box = await BoxManager.instanse.openTaskBox(groupKey);
     await box.add(task);
+    await BoxManager.instanse.closeBox(box);
     Navigator.of(context).pop();
   }
 }
