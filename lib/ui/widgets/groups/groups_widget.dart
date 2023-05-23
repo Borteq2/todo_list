@@ -28,6 +28,7 @@ class _GroupsWidgetBody extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: const Text('Группы'),
       ),
       body: const _GroupListWidget(),

@@ -2,12 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:to_do_list/ui/widgets/tasks/tasks_widget_model.dart';
 
-class TasksWidget extends StatefulWidget {
+class TasksWidgetConfiguration {
   final int groupKey;
+  final String title;
+
+  TasksWidgetConfiguration({
+    required this.groupKey,
+    required this.title,
+  });
+}
+
+class TasksWidget extends StatefulWidget {
+  final TasksWidgetConfiguration configuration;
 
   const TasksWidget({
     Key? key,
-    required this.groupKey,
+    required this.configuration,
   }) : super(key: key);
 
   @override
@@ -20,14 +30,14 @@ class _TasksWidgetState extends State<TasksWidget> {
   @override
   void initState() {
     super.initState();
-    _model = TasksWidgetModel(groupKey: widget.groupKey);
+    _model = TasksWidgetModel(configuration: widget.configuration);
   }
 
   @override
   Widget build(BuildContext context) {
     return TasksWidgetModelProvider(
       model: _model,
-      child: TasksWidgetBody(),
+      child: const TasksWidgetBody(),
     );
   }
 }
@@ -38,13 +48,13 @@ class TasksWidgetBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final model = TasksWidgetModelProvider.watch(context)?.model;
-    final title = model?.group?.name ?? 'Задачи';
+    final title = model?.configuration.title ?? 'Задачи';
 
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
       ),
-      body: _TasksListWidget(),
+      body: const _TasksListWidget(),
       floatingActionButton: FloatingActionButton(
         onPressed: () => model?.showForm(context),
         child: const Icon(Icons.add),
@@ -89,7 +99,7 @@ class _TasksListRowWidget extends StatelessWidget {
 
     final icon = task.isDone ? Icons.done : null;
     final style =
-        task.isDone ? TextStyle(decoration: TextDecoration.lineThrough) : null;
+        task.isDone ? const TextStyle(decoration: TextDecoration.lineThrough) : null;
 
     return Slidable(
       actionPane: const SlidableBehindActionPane(),
